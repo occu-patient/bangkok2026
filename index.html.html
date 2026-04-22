@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>2026 曼谷五日 🇹🇭</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C4922A;
+    --gold-light: #E8C46A;
+    --deep: #2C1608;
+    --bg: #F5EDE0;
+    --card: #FDF6EC;
+    --red: #8B1A1A;
+    --green: #2E7D52;
+    --blue: #7B4F2E;
+    --muted: #7A5C3A;
+    --border: #E2CEAE;
+    --accent: #9B2020;
+    --nav-h: 64px;
+    --header-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Noto Serif TC', serif; background: var(--bg); color: var(--deep); min-height: 100vh; overflow-x: hidden; }
+
+  /* ── HEADER ── */
+  .app-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header-h);
+    background: var(--deep);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  .header-title { color: var(--gold); font-size: 18px; font-weight: 900; letter-spacing: 2px; }
+  .header-sub { color: var(--gold-light); font-size: 11px; font-family: 'Sarabun', sans-serif; opacity: 0.8; }
+  .header-flag { font-size: 26px; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    background: var(--deep);
+    display: flex;
+    border-top: 1px solid rgba(196,146,42,0.25);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; cursor: pointer; transition: all 0.2s;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Sarabun', sans-serif; font-size: 10px; border: none; background: none;
+    padding: 8px 0;
+  }
+  .nav-item.active { color: var(--gold); }
+  .nav-item .nav-icon { font-size: 20px; }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: calc(var(--header-h) + 12px) 14px calc(var(--nav-h) + 16px); min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── DAY TABS ── */
+  .day-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; margin-bottom: 16px; }
+  .day-tabs::-webkit-scrollbar { display: none; }
+  .day-tab {
+    flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+    font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    background: var(--card); color: var(--muted); transition: all 0.2s;
+  }
+  .day-tab.active { background: var(--gold); border-color: var(--gold); color: var(--deep); }
+
+  /* ── DAY CONTENT ── */
+  .day-panel { display: none; animation: fadeIn 0.3s ease; }
+  .day-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+  /* ── DAY HEADER CARD ── */
+  .day-header-card {
+    background: linear-gradient(135deg, var(--deep) 0%, #4A1A08 100%);
+    border-radius: 16px; padding: 16px 18px; margin-bottom: 14px;
+    border: 1px solid rgba(201,168,76,0.3);
+    position: relative; overflow: hidden;
+  }
+  .day-header-card::before {
+    content: attr(data-emoji);
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 52px; opacity: 0.18;
+  }
+  .day-num { font-family: 'Sarabun', sans-serif; font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+  .day-title { font-size: 20px; font-weight: 900; color: #fff; margin: 2px 0 4px; }
+  .day-date { font-family: 'Sarabun', sans-serif; font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+  .tl-item { position: relative; margin-bottom: 14px; }
+  .tl-dot {
+    position: absolute; left: -23px; top: 16px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--gold); border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+  .tl-time {
+    font-family: 'Sarabun', sans-serif; font-size: 11px; font-weight: 700;
+    color: var(--gold); letter-spacing: 1px; margin-bottom: 4px;
+  }
+
+  /* ── SPOT CARD ── */
+  .spot-card {
+    background: var(--card); border-radius: 14px; padding: 14px 14px 12px;
+    border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .spot-card:active { transform: scale(0.98); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .spot-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .spot-name { font-size: 15px; font-weight: 900; color: var(--deep); flex: 1; line-height: 1.3; }
+  .spot-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 3px 8px; border-radius: 10px; font-family: 'Sarabun',sans-serif;
+    font-size: 10px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-booked { background: #E8F5ED; color: #2E7D52; }
+  .badge-paid { background: #FCEEE0; color: #8B1A1A; }
+
+  .spot-station {
+    font-family: 'Sarabun', sans-serif; font-size: 12px; color: var(--accent);
+    margin-bottom: 5px; display: flex; align-items: center; gap: 4px;
+  }
+  .spot-desc { font-family: 'Sarabun', sans-serif; font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+  .spot-note {
+    font-family: 'Sarabun', sans-serif; font-size: 11.5px;
+    background: #FEF4E8; border-left: 3px solid var(--accent);
+    padding: 6px 10px; border-radius: 0 8px 8px 0; color: #5C2010; margin-bottom: 8px;
+  }
+  .spot-price { font-family: 'Sarabun', sans-serif; font-size: 12px; color: var(--red); margin-bottom: 8px; }
+
+  .map-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--deep); color: var(--gold);
+    padding: 7px 14px; border-radius: 20px; font-family: 'Sarabun', sans-serif;
+    font-size: 12px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
+    transition: background 0.2s; letter-spacing: 0.5px;
+  }
+  .map-btn:hover { background: #3D1F00; }
+  .map-btn-secondary {
+    background: transparent; color: var(--muted); border: 1.5px solid var(--muted);
+    margin-left: 6px;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-label {
+    font-family: 'Sarabun', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+    margin: 18px 0 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── FLIGHT CARD ── */
+  .flight-card {
+    background: linear-gradient(135deg, #2C1608, #5C2010);
+    border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+  .flight-row { display: flex; align-items: center; justify-content: space-between; }
+  .flight-city { text-align: center; }
+  .flight-code { font-family: 'Sarabun', sans-serif; font-size: 24px; font-weight: 700; color: var(--gold); }
+  .flight-name { font-family: 'Sarabun', sans-serif; font-size: 10px; color: rgba(255,255,255,0.5); }
+  .flight-time { font-family: 'Sarabun', sans-serif; font-size: 18px; font-weight: 700; color: #fff; }
+  .flight-arrow { flex: 1; text-align: center; }
+  .flight-num { font-family: 'Sarabun', sans-serif; font-size: 12px; color: var(--gold-light); margin-bottom: 4px; }
+  .flight-line { height: 1px; background: rgba(201,168,76,0.4); position: relative; }
+  .flight-line::after { content: '✈'; position: absolute; right: -8px; top: -9px; font-size: 14px; color: var(--gold); }
+  .flight-date { font-family: 'Sarabun', sans-serif; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: center; }
+  .transit-badge {
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px; padding: 8px 12px; margin: 8px 0;
+    font-family: 'Sarabun', sans-serif; font-size: 12px; color: var(--gold-light);
+    text-align: center;
+  }
+
+  /* ── HOTEL CARD ── */
+  .hotel-card {
+    background: var(--card); border-radius: 16px; padding: 18px;
+    border: 1px solid var(--border); margin-bottom: 12px;
+  }
+  .hotel-name { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+  .hotel-info { font-family: 'Sarabun', sans-serif; font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .info-row { display: flex; gap: 8px; align-items: flex-start; }
+  .info-icon { flex-shrink: 0; }
+
+  /* ── BUDGET TABLE ── */
+  .budget-card { background: var(--card); border-radius: 14px; padding: 16px; border: 1px solid var(--border); margin-bottom: 12px; }
+  .budget-title { font-size: 15px; font-weight: 900; margin-bottom: 12px; }
+  .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-family: 'Sarabun', sans-serif; font-size: 13px; }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-row .label { color: var(--muted); }
+  .budget-row .amount { font-weight: 700; color: var(--deep); }
+  .budget-total { display: flex; justify-content: space-between; padding: 12px 0 4px; font-weight: 900; font-size: 16px; border-top: 2px solid var(--accent); margin-top: 4px; }
+
+  /* ── INFO CARDS ── */
+  .info-card { background: var(--card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); margin-bottom: 10px; }
+  .info-card-title { font-size: 14px; font-weight: 900; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .info-card p { font-family: 'Sarabun', sans-serif; font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-family: 'Sarabun',sans-serif; font-weight: 700; margin: 2px; }
+  .tag-warn { background: #FCEEE0; color: #8B1A1A; }
+  .tag-info { background: #F5EAD8; color: #7B4F2E; }
+  .tag-ok { background: #E8F5ED; color: #2E7D52; }
+
+  .emergency-list { list-style: none; }
+  .emergency-list li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-family: 'Sarabun', sans-serif; font-size: 13px; }
+  .emergency-list li:last-child { border-bottom: none; }
+  .emergency-list .phone { font-weight: 700; color: var(--accent); }
+
+  /* ── LUGGAGE ── */
+  .luggage-section { margin-bottom: 16px; }
+  .luggage-section h3 { font-size: 14px; font-weight: 900; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .luggage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .luggage-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Sarabun', sans-serif; font-size: 12.5px; color: var(--deep); display: flex; align-items: center; gap: 6px; }
+
+  /* ── VATTAX ── */
+  .vat-step { display: flex; gap: 12px; margin-bottom: 14px; }
+  .vat-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; flex-shrink: 0; }
+  .vat-content { font-family: 'Sarabun', sans-serif; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .vat-content strong { color: var(--deep); }
+
+  /* scroll fix */
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div>
+    <div class="header-title">曼谷 BANGKOK</div>
+    <div class="header-sub">04.30 – 05.04 ・ 2026 ・ 4人</div>
+  </div>
+  <div class="header-flag">🇹🇭</div>
+</header>
+
+<!-- PAGES -->
+
+<!-- ════ PAGE: 行程 ════ -->
+<div class="page active" id="page-schedule">
+
+  <div class="day-tabs" id="dayTabs">
+    <button class="day-tab active" onclick="switchDay(0)">Day 1<br><span style="font-size:10px;font-weight:400">4/30</span></button>
+    <button class="day-tab" onclick="switchDay(1)">Day 2<br><span style="font-size:10px;font-weight:400">5/1</span></button>
+    <button class="day-tab" onclick="switchDay(2)">Day 3<br><span style="font-size:10px;font-weight:400">5/2</span></button>
+    <button class="day-tab" onclick="switchDay(3)">Day 4<br><span style="font-size:10px;font-weight:400">5/3</span></button>
+    <button class="day-tab" onclick="switchDay(4)">Day 5<br><span style="font-size:10px;font-weight:400">5/4</span></button>
+  </div>
+
+  <!-- ── DAY 1 ── -->
+  <div class="day-panel active" id="day-0">
+    <div class="day-header-card" data-emoji="✈️">
+      <div class="day-num">DAY 1 ・ THURSDAY</div>
+      <div class="day-title">抵達 → Central World</div>
+      <div class="day-date">2026年 4月30日</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">11:40</div>
+        <div class="spot-card">
+          <div class="spot-name">✈️ CX431 高雄 → 香港</div>
+          <div class="spot-desc">國泰航空 CX431｜KHH 11:40 → HKG 13:20｜Terminal 1</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">13:20 – 14:30</div>
+        <div class="spot-card">
+          <div class="spot-name">🔄 香港轉機</div>
+          <div class="spot-desc">轉機時間約 1 小時 10 分，Terminal 1</div>
+          <div class="spot-note">💡 32 & 34 號登機閘口附近有免費文化工作坊：麻將填色 / 電話掛飾 / 馬賽克杯墊，每場次 1 小時</div>
+          <div class="spot-desc">場次：11:00 / 12:30 / 15:30 / 17:00</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">14:30</div>
+        <div class="spot-card">
+          <div class="spot-name">✈️ CX751 香港 → 曼谷</div>
+          <div class="spot-desc">國泰航空 CX751｜HKG 14:30 → BKK 16:30｜Terminal 1</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">16:30</div>
+        <div class="spot-card">
+          <div class="spot-top"><div class="spot-name">🛬 素萬那普機場抵達</div></div>
+          <div class="spot-station">🚇 ARL 機場快線 → Asoke</div>
+          <div class="spot-desc">機場快線 32 分鐘 52฿ ／ 計程車約 52 分鐘 365฿</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Suvarnabhumi+Airport+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">17:30</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">🏨 Miami Hotel 入住</div>
+          </div>
+          <div class="spot-station">🚇 MRT Sukhumvit E1 ／ BTS Nana E3</div>
+          <div class="spot-desc">2 Soi Sukhumvit 13, Khlong Toei Nuea, Watthana</div>
+          <div class="spot-note">💳 信用卡付款・押金 500฿/人（Check-in 時收取）</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Miami+Hotel+Bangkok+Sukhumvit+13" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">18:30</div>
+        <div class="spot-card">
+          <div class="spot-top"><div class="spot-name">🛍️ Central World</div></div>
+          <div class="spot-station">🚇 BTS Chit Lom E1 出口</div>
+          <div class="spot-desc">換錢（SuperRich 1F）、晚餐、逛街</div>
+          <div class="spot-note">💡 帶護照到 1F 服務台（P.S. I Love You 旁）領優惠小禮物</div>
+          <a class="map-btn" href="https://maps.google.com/?q=CentralWorld+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">22:00</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">💆 DIORA Luxe Sukhumvit Spa</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-station">🚇 BTS Asok E5 徒步 5 分鐘</div>
+          <div class="spot-desc">高奢 SPA・草藥球護理，KLOOK 預訂</div>
+          <div class="spot-price">💰 詳見 KLOOK 訂單</div>
+          <a class="map-btn" href="https://maps.google.com/?q=DIORA+Luxe+Sukhumvit+Spa+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAY 2 ── -->
+  <div class="day-panel" id="day-1">
+    <div class="day-header-card" data-emoji="⛵">
+      <div class="day-num">DAY 2 ・ FRIDAY</div>
+      <div class="day-title">昭拍耶河老城區</div>
+      <div class="day-date">2026年 5月1日</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">07:30</div>
+        <div class="spot-card">
+          <div class="spot-name">🍜 早餐：安樂園 / Jao.Un</div>
+          <div class="spot-station">🚇 MRT Sam Yot 1 號出口 1 分鐘 ／ MRT Wat Mangkon 1 分鐘</div>
+          <div class="spot-desc">90年傳統泰式早餐｜07:00–17:00</div>
+          <div class="spot-price">💰 40–200฿</div>
+          <a class="map-btn" href="https://maps.google.com/?q=On+Lok+Yun+Restaurant+Bangkok" target="_blank">📍 安樂園 Map</a>
+          <a class="map-btn map-btn-secondary" href="https://maps.google.com/?q=Jao+Un+Bangkok" target="_blank">📍 Jao.Un Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">09:00</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">👗 泰服體驗 MAHASANÉ</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-station">🚇 MRT Itsaraphap 3 號出口 13 分鐘</div>
+          <div class="spot-desc">09:00–12:00（需預留梳化時間）</div>
+          <div class="spot-note">👗 泰服 200฿/3hr・髮型 50฿・化妝 300฿・傘/包/鞋 50฿/件<br>📸 攝影師 2,500฿/4人/1小時 ≈ 1,275฿/人<br>⚠️ 建議穿無肩帶內衣，鞋子自備（涼鞋）</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Mahasane+Thai+Costume+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">之後</div>
+        <div class="spot-card">
+          <div class="spot-name">🛕 鄭王廟 Wat Arun（黎明寺）</div>
+          <div class="spot-station">🚇 搭船至 Wat Arun 碼頭（N5→船渡）</div>
+          <div class="spot-desc">08:00–18:00・泰國艾菲爾鐵塔</div>
+          <div class="spot-price">💰 門票 200฿</div>
+          <div class="spot-note">⚠️ 禁短褲、短裙、破洞長褲、露肩露背裝</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Wat+Arun+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">12:30</div>
+        <div class="spot-card">
+          <div class="spot-name">🌸 帕空花市 Pak Khlongtalat</div>
+          <div class="spot-station">🚇 MRT Sanam Chai 3 號出口 +5 分鐘 ／ 船 Tah Tian +14 分鐘</div>
+          <div class="spot-desc">24 小時・泰國最大花市・兩百年歷史</div>
+          <div class="spot-note">💡 可買茉莉花串（Phuang Malai）拍照</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Pak+Khlong+Talat+Flower+Market+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">下午</div>
+        <div class="spot-card">
+          <div class="spot-name">🏮 嵩越路 Song Wat Road</div>
+          <div class="spot-station">🚇 MRT Wat Mangkon 1 號出口 11 分鐘</div>
+          <div class="spot-desc">曼谷最古老地區・石龍軍路・順興宮</div>
+          <div class="spot-note">🍜 林老五魚丸麵（80年老店）16:00–21:00<br>🍖 Urai 滷鵝（60年老店）10–13 / 16–19 時，很早賣完<br>☕ The Corner House 08:00–23:00（早咖晚酒）</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Song+Wat+Road+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">下午</div>
+        <div class="spot-card">
+          <div class="spot-name">🏙️ Talat Noi 噠叻仔</div>
+          <div class="spot-station">🚇 MRT Hua Lamphong 1 號出口</div>
+          <div class="spot-desc">曼谷最古老華人社區・24 小時</div>
+          <div class="spot-note">☕ LA CABRA 丹麥咖啡（世界百大）08:00–17:00<br>🍵 Citizen Tea Canteen 寶藏泰奶店 10:00–18:00</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Talat+Noi+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">18:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🏬 ICONSIAM 晚餐 + 水舞</div>
+          <div class="spot-station">🚇 BTS Charoen Nakhon G2 出口（免費接駁船）</div>
+          <div class="spot-desc">10:00–22:00・帶護照到 1F 服務台換遊客優惠卡</div>
+          <div class="spot-note">💧 東南亞最大水舞場次：19:00 / 20:00 / 21:00<br>⏰ 提早 20 分鐘到河岸平台佔位</div>
+          <div class="spot-desc">🍚 Lung Ngen 曼谷泰奶天花板 GF｜🍗 BOON TONG KEE 米其林海南雞飯 GF</div>
+          <a class="map-btn" href="https://maps.google.com/?q=ICONSIAM+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAY 3 ── -->
+  <div class="day-panel" id="day-2">
+    <div class="day-header-card" data-emoji="🐘">
+      <div class="day-num">DAY 3 ・ SATURDAY</div>
+      <div class="day-title">大城一日遊</div>
+      <div class="day-date">2026年 5月2日</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">08:00</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">🦁 Sriayuthaya Lion Park 大城野生動物園</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-desc">含門票・08:30–17:00・車程約 1 小時 46 分</div>
+          <div class="spot-note">📸 建議玩法：14號長頸鹿 → 4號小獅子 → 31號大水豚 → 18號小猴子<br>💡 避開中午大太陽，餵食/合照需出示票券</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Sriayuthaya+Lion+Park+Ayutthaya" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">中午</div>
+        <div class="spot-card">
+          <div class="spot-name">☕ BORAN Cafe</div>
+          <div class="spot-desc">Wat Ratchaburana 瑪哈泰寺對面・復古餐廳</div>
+          <div class="spot-note">🌽 玉米沙拉、芒果糯米飯必點</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Boran+Cafe+Ayutthaya" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">下午</div>
+        <div class="spot-card">
+          <div class="spot-name">🍬 Roti Sai Mai Abeedeen</div>
+          <div class="spot-desc">大城名物・糖絲捲</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Roti+Sai+Mai+Ayutthaya" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">下午</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">🛕 崖差蒙空寺 Wat Yai Chai Mongkhon</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-desc">含門票・08:00–18:30</div>
+          <div class="spot-note">⚠️ 禁短褲、短裙、露肩露背裝、破洞長褲<br>🌧️ 帶毛巾或輕便雨衣</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Wat+Yai+Chai+Mongkhon+Ayutthaya" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">17:00</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">🐘 長尾船餵大象</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-desc">含大象食物・大城河畔</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Elephant+feeding+long+tail+boat+Ayutthaya" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">19:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🌃 Jodd Fairs Night Market</div>
+          <div class="spot-station">🚇 MRT Thailand Cultural Centre 1 號出口 +5 分鐘</div>
+          <div class="spot-desc">16:00–24:00・商品不重複</div>
+          <div class="spot-note">🍖 火山排骨・🦐 炭烤海鮮與泰國蝦・🥤 水果西施冰沙</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Jodd+Fairs+Night+Market+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">宵夜</div>
+        <div class="spot-card">
+          <div class="spot-name">🍜 Jeh O Chula（朱拉隆功大學夜市）</div>
+          <div class="spot-station">🚇 MRT Sam Yan 3 號出口附近</div>
+          <div class="spot-desc">16:00–01:00・深夜媽媽麵代表</div>
+          <div class="spot-note">🥛 酸辣冬蔭鍋媽媽麵・牛奶必喝・Nueng Nom Nua</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Jeh+O+Chula+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAY 4 ── -->
+  <div class="day-panel" id="day-3">
+    <div class="day-header-card" data-emoji="🎨">
+      <div class="day-num">DAY 4 ・ SUNDAY</div>
+      <div class="day-title">Ari 文藝 + 唐人街</div>
+      <div class="day-date">2026年 5月3日</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">08:00</div>
+        <div class="spot-card">
+          <div class="spot-name">☕ Factory Coffee</div>
+          <div class="spot-station">🚇 BTS Phaya Thai E5 出口</div>
+          <div class="spot-desc">08:00–16:00・三次泰國咖啡冠軍・現場排隊</div>
+          <div class="spot-note">必點：Moscow、Phayathai 特調・鹹蛋可頌</div>
+          <div class="spot-price">💰 200–400฿</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Factory+Coffee+Bangkok+Phaya+Thai" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🌿 Ari 文藝區</div>
+          <div class="spot-station">🚇 BTS Ari E3 / E4 出口</div>
+          <div class="spot-desc">文藝小區，建議停留 1–2 小時，穿色調簡單的衣服拍照</div>
+          <div class="spot-note">🏠 GUMP's（BTS Ari E4 +6min）10:00–20:00<br>☕ NANA Coffee Roasters 08:00–17:00・冠軍咖啡自烘精品豆<br>🍩 Donut Disturb 10:00–18:00・開心果口味冰沙大杯好喝</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Ari+neighborhood+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">13:00</div>
+        <div class="spot-card">
+          <div class="spot-name">💊 Siam Pharmacy 美藥妝</div>
+          <div class="spot-station">🚇 MRT Sam Yot 1 號出口 1 分鐘</div>
+          <div class="spot-desc">Mahatun Plaza 1 樓・08:00–19:00</div>
+          <div class="spot-note">價格常比連鎖藥妝划算，藥品與保健品選擇齊全</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Siam+Pharmacy+Mahatun+Plaza+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">16:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🛒 王朗市場 Wang Lang Market</div>
+          <div class="spot-station">🚇 BTS Saphan Taksin → 渡船至汪郎 Sathon Pier N10</div>
+          <div class="spot-desc">09:00–18:00・在地人市場・好吃又便宜</div>
+          <div class="spot-note">💡 建議 14:00–18:00 去，攤位最齊全</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Wang+Lang+Market+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">17:30</div>
+        <div class="spot-card">
+          <div class="spot-top">
+            <div class="spot-name">🌅 Mug Jee 河景餐廳</div>
+            <span class="spot-badge badge-booked">✅ 已預訂</span>
+          </div>
+          <div class="spot-station">🚇 MRT Sanam Chai 1 號出口 +7 分鐘</div>
+          <div class="spot-desc">12:00–23:00・泰式料理、烤串，合菜、單點</div>
+          <div class="spot-note">📸 傍晚落日最美，建議提早到！</div>
+          <div class="spot-price">💰 350–600฿/人</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Mug+Jee+Restaurant+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">20:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🍸 TEP BAR 泰式文化酒吧</div>
+          <div class="spot-station">🚇 MRT Wat Mangkon 3 號出口 +8 分鐘</div>
+          <div class="spot-desc">18:00–24:00・泰國傳統音樂酒吧</div>
+          <div class="spot-note">🎵 推預約週四、週日，有傳統樂團表演</div>
+          <div class="spot-price">💰 特色調酒 330–600฿</div>
+          <a class="map-btn" href="https://maps.google.com/?q=TEP+Bar+Bangkok+Chinatown" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">晚間</div>
+        <div class="spot-card">
+          <div class="spot-name">🦅 東方燕窩 / 南星燕窩</div>
+          <div class="spot-station">🚇 MRT Wat Mangkon 1 號出口附近</div>
+          <div class="spot-desc">東方燕窩：11:30–23:30・南星燕窩：24小時營業</div>
+          <div class="spot-note">椰子燕窩、雪梨燕窩最熱門</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Oriental+Bird+Nest+Dessert+Bangkok+Chinatown" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">宵夜可選</div>
+        <div class="spot-card">
+          <div class="spot-name">💆 Nature Thai Massage & Spa</div>
+          <div class="spot-station">🚇 Miami Hotel +6 分鐘步行</div>
+          <div class="spot-desc">10:00–24:00・最晚接待 22:00</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Nature+Thai+Massage+Spa+Sukhumvit+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DAY 5 ── -->
+  <div class="day-panel" id="day-4">
+    <div class="day-header-card" data-emoji="🛫">
+      <div class="day-num">DAY 5 ・ MONDAY</div>
+      <div class="day-title">退稅購物 → 返台</div>
+      <div class="day-date">2026年 5月4日</div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">08:00</div>
+        <div class="spot-card">
+          <div class="spot-name">☕ 早餐選擇</div>
+          <div class="spot-note">
+            🏛 <b>Samantao Heritage Coffee</b>｜BTS Phloen Chit E4 +12 分鐘・Nai Lert Park 內・07:00–17:00・傳統泰式早餐<br><br>
+            ☕ <b>RISE COFFEE</b>｜BTS Phloen Chit E2 +3 分鐘・08:00–17:00・4.9分咖啡店
+          </div>
+          <a class="map-btn" href="https://maps.google.com/?q=Samantao+Heritage+Coffee+Bangkok" target="_blank">📍 Samantao Map</a>
+          <a class="map-btn map-btn-secondary" href="https://maps.google.com/?q=Rise+Coffee+Bangkok+Phloen+Chit" target="_blank">📍 Rise Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🧳 飯店 Check Out + 購物</div>
+          <div class="spot-desc">行李寄放飯店後繼續購物</div>
+          <div class="spot-note">
+            🅐 <b>EmSphere</b>（BTS Phrom Phong E5 +5min）10:00–22:00<br>
+            🅑 <b>Central World + Big C</b>（BTS Chit Lom E1）<br>
+            🅒 <b>Terminal 21 Asok</b>（BTS Asok E4）
+          </div>
+          <a class="map-btn" href="https://maps.google.com/?q=EmSphere+Bangkok" target="_blank">📍 EmSphere</a>
+          <a class="map-btn map-btn-secondary" href="https://maps.google.com/?q=Terminal+21+Bangkok" target="_blank">📍 Terminal 21</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">14:00</div>
+        <div class="spot-card">
+          <div class="spot-name">🛬 素萬那普機場（退稅 + 報到）</div>
+          <div class="spot-station">🚇 ARL 機場快線 → Suvarnabhumi</div>
+          <div class="spot-note">📋 備妥：護照 + 收據 + 黃色退稅單（P.P.10）<br>退稅辦公室在 4 樓出境大廳 10 號門（U 櫃台）旁</div>
+          <a class="map-btn" href="https://maps.google.com/?q=Suvarnabhumi+Airport+Bangkok" target="_blank">📍 Google Map</a>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">16:25</div>
+        <div class="spot-card">
+          <div class="spot-name">✈️ CX706 曼谷 → 香港</div>
+          <div class="spot-desc">BKK 16:25 → HKG 20:30｜Terminal 1</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">21:40</div>
+        <div class="spot-card">
+          <div class="spot-name">✈️ CX448 香港 → 高雄</div>
+          <div class="spot-desc">HKG 21:40 → KHH 23:10｜Terminal 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end page-schedule -->
+
+
+<!-- ════ PAGE: 交通 ════ -->
+<div class="page" id="page-transport">
+  <div class="section-label">✈️ 機票資訊</div>
+
+  <div class="flight-card">
+    <div class="flight-date">2026.04.30（四）去程</div>
+    <div style="margin-top:12px">
+      <div class="flight-row">
+        <div class="flight-city"><div class="flight-code">KHH</div><div class="flight-name">高雄小港</div><div class="flight-time">11:40</div></div>
+        <div class="flight-arrow"><div class="flight-num">CX431</div><div class="flight-line"></div></div>
+        <div class="flight-city"><div class="flight-code">HKG</div><div class="flight-name">香港</div><div class="flight-time">13:20</div></div>
+      </div>
+      <div class="transit-badge">🔄 香港轉機・Terminal 1・等待 1hr 10min</div>
+      <div class="flight-row">
+        <div class="flight-city"><div class="flight-code">HKG</div><div class="flight-name">香港</div><div class="flight-time">14:30</div></div>
+        <div class="flight-arrow"><div class="flight-num">CX751</div><div class="flight-line"></div></div>
+        <div class="flight-city"><div class="flight-code">BKK</div><div class="flight-name">曼谷</div><div class="flight-time">16:30</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flight-card">
+    <div class="flight-date">2026.05.04（一）回程</div>
+    <div style="margin-top:12px">
+      <div class="flight-row">
+        <div class="flight-city"><div class="flight-code">BKK</div><div class="flight-name">曼谷</div><div class="flight-time">16:25</div></div>
+        <div class="flight-arrow"><div class="flight-num">CX706</div><div class="flight-line"></div></div>
+        <div class="flight-city"><div class="flight-code">HKG</div><div class="flight-name">香港</div><div class="flight-time">20:30</div></div>
+      </div>
+      <div class="transit-badge">🔄 香港轉機・Terminal 1・等待 1hr 10min</div>
+      <div class="flight-row">
+        <div class="flight-city"><div class="flight-code">HKG</div><div class="flight-name">香港</div><div class="flight-time">21:40</div></div>
+        <div class="flight-arrow"><div class="flight-num">CX448</div><div class="flight-line"></div></div>
+        <div class="flight-city"><div class="flight-code">KHH</div><div class="flight-name">高雄小港</div><div class="flight-time">23:10</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">🚇 曼谷市區交通</div>
+  <div class="info-card">
+    <div class="info-card-title">🚆 機場 → 市區</div>
+    <p>ARL 機場快線：32 分鐘・52฿（推薦）<br>計程車：約 52 分鐘・365฿（視塞車）<br>GRAB 叫車：較穩定，可在 APP 確認價格</p>
+  </div>
+  <div class="info-card">
+    <div class="info-card-title">🚇 BTS / MRT 地鐵</div>
+    <p>• 建議使用 Rabbit Card（BTS）或兔子卡<br>• 推薦 APP：<b>Transit TH</b>（BTS/MRT/公車）<br>• 推薦 APP：<b>Moovit</b>（公共交通路線）</p>
+  </div>
+  <div class="info-card">
+    <div class="info-card-title">🛺 嘟嘟車 / 計程車</div>
+    <p>• <b>GRAB</b>：最推薦，價格透明，支援信用卡<br>• <b>Muvmi</b>：電動嘟嘟車，短程平價<br>• 計程車請確認跳錶，或使用 GRAB 預估</p>
+  </div>
+  <div class="info-card">
+    <div class="info-card-title">⛵ 昭拍耶河渡船</div>
+    <p>橘旗（Orange Flag）：觀光路線，停靠主要景點<br>N5 → 鄭王廟對面碼頭（需搭小渡船過河）<br>N6 → 帕空花市附近</p>
+  </div>
+</div>
+
+
+<!-- ════ PAGE: 住宿 ════ -->
+<div class="page" id="page-hotel">
+  <div class="section-label">🏨 住宿資訊</div>
+  <div class="hotel-card">
+    <div class="hotel-name">🏨 Miami Hotel Bangkok</div>
+    <div style="margin: 8px 0 12px;">
+      <span class="tag tag-ok">Booking.com 預訂</span>
+      <span class="tag tag-info">4人・4晚</span>
+    </div>
+    <div class="hotel-info">
+      <div class="info-row"><span class="info-icon">📍</span><span>2 Soi Sukhumvit 13, Khlong Toei Nuea, Watthana, Bangkok 10110</span></div>
+      <div style="height:8px"></div>
+      <div class="info-row"><span class="info-icon">🚇</span><span>BTS Nana E3 出口・MRT Sukhumvit E1 出口</span></div>
+      <div style="height:8px"></div>
+      <div class="info-row"><span class="info-icon">🛏️</span><span>Deluxe Twins Room × 2（單人床 × 2）</span></div>
+      <div style="height:8px"></div>
+      <div class="info-row"><span class="info-icon">💳</span><span>信用卡付款・押金 500฿/人（Check-in 時付）</span></div>
+      <div style="height:8px"></div>
+      <div class="info-row"><span class="info-icon">🕐</span><span>Check-in：14:00 ／ Check-out：12:00</span></div>
+    </div>
+    <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+      <a class="map-btn" href="https://maps.google.com/?q=Miami+Hotel+Bangkok+2+Soi+Sukhumvit+13" target="_blank">📍 Google Map</a>
+      <a class="map-btn map-btn-secondary" href="https://goo.gl/maps/MiamiHotelBangkok" target="_blank">🧭 導航前往</a>
+    </div>
+  </div>
+
+  <div class="section-label">⚠️ 退稅 VAT Refund</div>
+  <div class="info-card">
+    <div class="info-card-title">💰 退稅流程</div>
+    <div class="vat-step">
+      <div class="vat-num">1</div>
+      <div class="vat-content"><strong>購物時</strong>：單店單次消費達 <strong>2,000฿</strong> 以上，出示護照告知店員要退稅，索取黃色退稅申請表 <strong>P.P.10</strong>，收據需黏貼在表上</div>
+    </div>
+    <div class="vat-step">
+      <div class="vat-num">2</div>
+      <div class="vat-content"><strong>出發當天（行李托運前）</strong>：消費總額超過 20,000฿ 須到退稅辦公室蓋章（4 樓 10 號門 U 櫃台旁）</div>
+    </div>
+    <div class="vat-step">
+      <div class="vat-num">3</div>
+      <div class="vat-content"><strong>過海關後</strong>：在 VAT REFUND 櫃台領錢，右邊 D1–D4 登機口之間，或 G5–G8 登機口之間</div>
+    </div>
+    <p style="font-family:'Sarabun',sans-serif;font-size:12px;color:var(--muted);margin-top:8px">⚠️ 禁退稅：違禁品、蔬果類、藥品｜手續費：<strong style="color:var(--green)">免費（現金退稅）</strong>，信用卡有匯差</p>
+  </div>
+
+  <div class="section-label">🆘 緊急聯絡</div>
+  <div class="info-card">
+    <ul class="emergency-list">
+      <li><span>觀光警察</span><span class="phone">1155</span></li>
+      <li><span>醫療急救</span><span class="phone">1669 / 1554</span></li>
+      <li><span>報案專線</span><span class="phone">191</span></li>
+      <li><span>火災報案</span><span class="phone">199</span></li>
+      <li><span>泰國觀光局</span><span class="phone">1672 / 1111</span></li>
+      <li><span>消費者保護</span><span class="phone">1166</span></li>
+      <li><span>台灣駐泰辦事處</span><span class="phone">(+66) 81-666-4006</span></li>
+      <li><span>旅外急難救助</span><span class="phone">001-800-0885-0885</span></li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ════ PAGE: 行李 ════ -->
+<div class="page" id="page-luggage">
+  <div class="section-label">🧳 行李清單</div>
+  <div class="luggage-section">
+    <h3>📄 重要文件</h3>
+    <div class="luggage-grid">
+      <div class="luggage-item">🛂 護照（有效期）</div>
+      <div class="luggage-item">✈️ 機票（電子）</div>
+      <div class="luggage-item">🏨 訂房確認信</div>
+      <div class="luggage-item">🎫 KLOOK 訂單</div>
+      <div class="luggage-item">💳 信用卡</div>
+      <div class="luggage-item">💵 泰銖現金</div>
+    </div>
+  </div>
+  <div class="luggage-section">
+    <h3>👕 衣物配件</h3>
+    <div class="luggage-grid">
+      <div class="luggage-item">👘 寺廟長褲長裙</div>
+      <div class="luggage-item">🩴 涼鞋（泰服用）</div>
+      <div class="luggage-item">🧥 輕便外套</div>
+      <div class="luggage-item">🌂 輕便雨衣/傘</div>
+      <div class="luggage-item">🩱 無肩帶內衣</div>
+      <div class="luggage-item">🎽 換洗衣物 ×4</div>
+    </div>
+  </div>
+  <div class="luggage-section">
+    <h3>💊 藥品保健</h3>
+    <div class="luggage-grid">
+      <div class="luggage-item">💊 腸胃藥/止瀉</div>
+      <div class="luggage-item">🦟 防蚊液</div>
+      <div class="luggage-item">🩹 OK繃/消毒</div>
+      <div class="luggage-item">🤧 感冒藥</div>
+      <div class="luggage-item">🌡️ 個人常備藥</div>
+      <div class="luggage-item">☀️ 防曬乳</div>
+    </div>
+  </div>
+  <div class="luggage-section">
+    <h3>🔌 電子配件</h3>
+    <div class="luggage-grid">
+      <div class="luggage-item">📱 手機充電線</div>
+      <div class="luggage-item">🔋 行動電源</div>
+      <div class="luggage-item">🌐 網路卡/SIM</div>
+      <div class="luggage-item">📷 相機/記憶卡</div>
+      <div class="luggage-item">🔌 泰國插頭</div>
+      <div class="luggage-item">💾 雲端備份</div>
+    </div>
+  </div>
+  <div class="section-label">📱 推薦 APP</div>
+  <div class="info-card">
+    <p>
+      🗺️ <b>InMapz</b>：公共場所室內地圖<br>
+      🚖 <b>GRAB</b>：叫車、外送<br>
+      🚇 <b>Transit TH</b>：BTS/MRT/公車<br>
+      🌐 <b>Moovit</b>：公共交通路線<br>
+      🛺 <b>Muvmi</b>：電動嘟嘟車<br>
+      🍽️ <b>QuePai</b>：餐飲排隊 APP<br>
+      🚻 <b>Khee</b>：公廁 APP<br>
+      📅 <b>KLOOK</b>：景點票券
+    </p>
+  </div>
+</div>
+
+
+<!-- ════ PAGE: 預算 ════ -->
+<div class="page" id="page-budget">
+  <div class="section-label">💰 預算概覽（以泰銖 ฿ 計）</div>
+
+  <div class="budget-card">
+    <div class="budget-title">✅ 已預訂（固定支出）</div>
+    <div class="budget-row"><span class="label">DIORA Luxe SPA（4人）</span><span class="amount">詳見 KLOOK</span></div>
+    <div class="budget-row"><span class="label">泰服體驗 MAHASANÉ（4人）</span><span class="amount">≈ 5,100฿</span></div>
+    <div class="budget-row"><span class="label">大城一日遊・動物園含票（4人）</span><span class="amount">詳見行程</span></div>
+    <div class="budget-row"><span class="label">崖差蒙空寺門票（4人）</span><span class="amount">含行程</span></div>
+    <div class="budget-row"><span class="label">長尾船餵大象（4人）</span><span class="amount">含行程</span></div>
+    <div class="budget-row"><span class="label">Mug Jee 河景餐廳（4人）</span><span class="amount">≈ 1,400–2,400฿</span></div>
+  </div>
+
+  <div class="budget-card">
+    <div class="budget-title">🍽️ 餐飲預估（每人每日）</div>
+    <div class="budget-row"><span class="label">早餐</span><span class="amount">80–200฿</span></div>
+    <div class="budget-row"><span class="label">午餐</span><span class="amount">150–300฿</span></div>
+    <div class="budget-row"><span class="label">晚餐</span><span class="amount">300–600฿</span></div>
+    <div class="budget-row"><span class="label">飲料/點心/711</span><span class="amount">100–200฿</span></div>
+    <div class="budget-total"><span>餐飲小計/人/天</span><span>630–1,300฿</span></div>
+  </div>
+
+  <div class="budget-card">
+    <div class="budget-title">🚇 交通預估（每人）</div>
+    <div class="budget-row"><span class="label">ARL 機場快線（來回）</span><span class="amount">104฿</span></div>
+    <div class="budget-row"><span class="label">BTS / MRT（每日）</span><span class="amount">50–150฿</span></div>
+    <div class="budget-row"><span class="label">GRAB / 渡船</span><span class="amount">50–200฿/次</span></div>
+  </div>
+
+  <div class="budget-card">
+    <div class="budget-title">🛍️ 購物 / 雜費（預估）</div>
+    <div class="budget-row"><span class="label">飯店押金（退房退回）</span><span class="amount">500฿/人</span></div>
+    <div class="budget-row"><span class="label">景點門票（鄭王廟等）</span><span class="amount">200฿/次</span></div>
+    <div class="budget-row"><span class="label">藥妝購物（自訂）</span><span class="amount">自定</span></div>
+    <div class="budget-row"><span class="label">VAT 退稅（現金退）</span><span class="amount">✅ 免手續費</span></div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">💡 換錢建議</div>
+    <p>
+      🏆 <b>SuperRich</b>（橘色）：Central World 1F / ICONSIAM GF，匯率最優<br>
+      🏆 SuperRich（綠色）：Central World 3F<br>
+      ⚠️ 機場匯率較差，建議只換少量應急<br>
+      📱 可用 WISE 卡刷卡消費取得好匯率
+    </p>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="switchPage('schedule',this)">
+    <span class="nav-icon">🗓️</span>每日行程
+  </button>
+  <button class="nav-item" onclick="switchPage('transport',this)">
+    <span class="nav-icon">✈️</span>交通
+  </button>
+  <button class="nav-item" onclick="switchPage('hotel',this)">
+    <span class="nav-icon">🏨</span>住宿
+  </button>
+  <button class="nav-item" onclick="switchPage('luggage',this)">
+    <span class="nav-icon">🧳</span>行李
+  </button>
+  <button class="nav-item" onclick="switchPage('budget',this)">
+    <span class="nav-icon">💰</span>預算
+  </button>
+</nav>
+
+<script>
+  function switchPage(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    el.classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function switchDay(idx) {
+    document.querySelectorAll('.day-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+    document.querySelectorAll('.day-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+    window.scrollTo(0,0);
+  }
+</script>
+</body>
+</html>
